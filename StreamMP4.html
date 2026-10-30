@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#121212] text-slate-200">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>#94028104 - Anonymous Media Vault</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Space Mono', 'monospace'],
+                    },
+                    colors: {
+                        changreen: '#789922',
+                        cardbg: '#1e1e1e',
+                        cardborder: '#2a2a2a',
+                        darkbg: '#121212'
+                    },
+                    animation: {
+                        'float-watermark': 'floatWatermark 18s linear infinite alternate',
+                    },
+                    keyframes: {
+                        floatWatermark: {
+                            '0%': { top: '6%', left: '6%', transform: 'translate(0, 0)' },
+                            '25%': { top: '60%', left: '12%', transform: 'translate(10px, -10px)' },
+                            '50%': { top: '12%', left: '50%', transform: 'translate(-10px, 15px)' },
+                            '75%': { top: '55%', left: '60%', transform: 'translate(-15px, -5px)' },
+                            '100%': { top: '30%', left: '20%', transform: 'translate(5px, 5px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Anti-selection & protection */
+        * {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important;
+        }
+
+        /* Hide content on print */
+        @media print {
+            html, body { display: none !important; }
+        }
+
+        .greentext {
+            color: #789922;
+        }
+
+        /* Hide native video controls overlay */
+        video::-webkit-media-controls { display: none !important; }
+        video::-webkit-media-controls-enclosure { display: none !important; }
+    </style>
+</head>
+<body class="h-full bg-darkbg text-slate-200 font-sans text-xs select-none relative flex flex-col justify-between min-h-screen">
+
+    <!-- Security Toast Notification -->
+    <div id="securityAlert" class="fixed top-4 right-4 z-50 transform translate-x-full transition-transform duration-200 ease-in-out pointer-events-none">
+        <div class="bg-red-950/90 border border-red-600 text-red-200 px-4 py-2.5 rounded shadow-2xl flex items-center gap-2 text-xs">
+            <i class="fa-solid fa-triangle-exclamation text-red-400"></i>
+            <span id="securityAlertMsg">Action restricted by board security policy.</span>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 my-auto">
+
+        <!-- Simple Title Banner -->
+        <div class="text-center mb-6">
+            <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-changreen font-serif italic">Anonymous Board Stream</h1>
+            <p class="text-[11px] text-slate-400 mt-1">Encrypted Post Attachment</p>
+        </div>
+
+        <!-- AUTHENTICATION FORM CARD -->
+        <div id="authPortal" class="w-full max-w-sm bg-cardbg border border-cardborder rounded-lg p-5 sm:p-6 shadow-xl transition-all duration-300">
+            
+            <div class="border-b border-cardborder pb-3 mb-4 flex items-center justify-between text-[11px]">
+                <div class="flex items-center gap-2">
+                    <span class="font-bold text-changreen">Gatekeeper</span>
+                    <span class="text-slate-400">Anonymous</span>
+                </div>
+                <span class="text-slate-500 font-mono">No.84920194</span>
+            </div>
+
+            <div class="space-y-1.5 mb-5 text-xs">
+                <p class="greentext">&gt;Be me</p>
+                <p class="greentext">&gt;Attempting to unseal board media</p>
+                <p class="text-slate-300 mt-2">Enter authorization key to unlock video attachment.</p>
+            </div>
+
+            <!-- Passcode Form -->
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-wider text-slate-400 mb-1 font-mono">Passcode</label>
+                    <input 
+                        type="password" 
+                        id="passcodeInput" 
+                        placeholder="Enter key..."
+                        autocomplete="off"
+                        spellcheck="false"
+                        class="w-full px-3 py-2 bg-[#121212] border border-cardborder rounded text-slate-100 text-xs focus:outline-none focus:border-changreen transition-colors font-mono"
+                    >
+                    <p id="errorMessage" class="text-[11px] text-red-400 mt-1.5 hidden flex items-center gap-1">
+                        <i class="fa-solid fa-circle-xmark"></i> Invalid authorization key.
+                    </p>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full py-2.5 px-4 bg-[#2a2a2a] hover:bg-changreen hover:text-white text-slate-200 font-semibold text-xs rounded border border-[#3a3a3a] transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                    <i class="fa-solid fa-lock-open text-[10px]"></i>
+                    <span>Unlock Stream</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- VIDEO STREAM CONTAINER -->
+        <div id="videoContainer" class="w-full max-w-3xl bg-cardbg border border-cardborder rounded-lg p-3 sm:p-5 shadow-2xl hidden flex-col transition-all duration-300">
+            
+            <!-- Anonymous Post Header -->
+            <div class="border-b border-cardborder pb-2.5 mb-3 flex items-center justify-between text-[11px] flex-wrap gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-changreen">Anonymous</span>
+                    <span class="text-slate-400 font-mono">No.94028104</span>
+                </div>
+                <div class="flex items-center gap-3 font-mono text-[10px]">
+                    <span class="text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">STREAMING</span>
+                    <button onclick="lockPlayer()" class="text-slate-400 hover:text-red-400 transition-colors">
+                        [Lock]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Media Info Line -->
+            <div class="text-[11px] font-mono text-slate-400 mb-3 flex items-center gap-2 bg-[#121212] p-2 rounded border border-cardborder">
+                <i class="fa-solid fa-file-video text-changreen"></i>
+                <span class="text-slate-300">File: media_stream.mp4</span>
+                <span class="text-slate-500">(1080p, Anonymous Video Attachment)</span>
+            </div>
+
+            <!-- Video Player Stage -->
+            <div id="videoStage" class="relative bg-black aspect-video flex items-center justify-center overflow-hidden rounded border border-cardborder group">
+                
+                <!-- Focus Loss Blur Overlay -->
+                <div id="blurCurtain" class="absolute inset-0 z-40 bg-[#121212]/95 backdrop-blur-md hidden flex-col items-center justify-center p-6 text-center">
+                    <div class="w-12 h-12 rounded-full bg-red-950 border border-red-500 text-red-400 flex items-center justify-center text-xl mb-2 shadow-lg">
+                        <i class="fa-solid fa-shield-cat"></i>
+                    </div>
+                    <p class="text-sm font-bold text-slate-100 mb-1">PROTECTED MEDIA HIDDEN</p>
+                    <p class="text-xs text-slate-400 max-w-sm">Stream automatically paused due to focus loss, window switching, or screenshot attempt.</p>
+                    <span class="mt-3 px-3 py-1 bg-cardbg border border-cardborder text-[10px] text-slate-300 font-mono rounded cursor-pointer">
+                        Click frame to resume view
+                    </span>
+                </div>
+
+                <!-- Floating Watermark -->
+                <div id="watermark" class="absolute z-20 pointer-events-none select-none opacity-30 font-mono text-[10px] text-slate-200 bg-black/80 border border-slate-700 px-2.5 py-1 rounded shadow-xl animate-float-watermark flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-changreen"></span>
+                    <span>ANONYMOUS • SESSION #<span id="watermarkStamp">0000</span></span>
+                </div>
+
+                <!-- HTML5 Video Source -->
+                <video 
+                    id="mediaPlayer" 
+                    class="w-full h-full object-contain pointer-events-none"
+                    playsinline
+                    preload="metadata"
+                >
+                    <source src="https://raw.githubusercontent.com/prakharrpatel/display-prv-data-mp4/main/adi._.tea1_2026-10-29_14-40-20_4018520968276419779_57613334061.mp4" type="video/mp4">
+                    Your browser does not support HTML5 video playback.
+                </video>
+
+                <!-- Loading Spinner -->
+                <div id="videoSpinner" class="absolute inset-0 z-10 bg-black/70 flex flex-col items-center justify-center gap-2 font-mono text-xs">
+                    <div class="w-8 h-8 border-2 border-changreen/20 border-t-changreen rounded-full animate-spin"></div>
+                    <span class="text-slate-400 text-[11px]">Loading Media Buffer...</span>
+                </div>
+
+                <!-- Center Play Button -->
+                <button id="centerPlayBtn" onclick="togglePlay()" class="absolute z-20 w-14 h-14 rounded-full bg-changreen hover:bg-changreen/90 text-white flex items-center justify-center text-xl shadow-2xl transition-all hover:scale-105 active:scale-95 opacity-90 cursor-pointer">
+                    <i class="fa-solid fa-play ml-0.5"></i>
+                </button>
+            </div>
+
+            <!-- Custom Controls -->
+            <div class="bg-[#121212] p-3 rounded-b border-t border-cardborder mt-1 space-y-2 font-mono">
+                
+                <!-- Seek Progress Bar -->
+                <div class="flex items-center gap-2">
+                    <span id="currentTime" class="text-[11px] text-slate-400 min-w-[38px] text-right">00:00</span>
+                    <div class="relative flex-grow h-2 bg-[#2a2a2a] rounded cursor-pointer group border border-cardborder" id="progressBarContainer" onclick="seekVideo(event)">
+                        <div id="progressBar" class="h-full bg-changreen rounded w-0 relative">
+                            <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        </div>
+                    </div>
+                    <span id="durationTime" class="text-[11px] text-slate-400 min-w-[38px]">00:00</span>
+                </div>
+
+                <!-- Controls Toolbar -->
+                <div class="flex items-center justify-between text-xs pt-1">
+                    <div class="flex items-center gap-2">
+                        <!-- Play / Pause -->
+                        <button onclick="togglePlay()" id="playPauseBtn" class="px-2.5 py-1 rounded bg-[#1e1e1e] hover:bg-[#2a2a2a] text-slate-200 border border-cardborder cursor-pointer">
+                            <i class="fa-solid fa-play text-xs"></i>
+                        </button>
+
+                        <!-- Volume -->
+                        <div class="flex items-center gap-1.5 bg-[#1e1e1e] border border-cardborder px-2 py-1 rounded">
+                            <button onclick="toggleMute()" id="muteBtn" class="text-slate-300 hover:text-white">
+                                <i class="fa-solid fa-volume-high text-xs"></i>
+                            </button>
+                            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)" class="w-14 accent-changreen cursor-pointer">
+                        </div>
+
+                        <!-- Speed -->
+                        <select id="speedSelect" onchange="changeSpeed(this.value)" class="bg-[#1e1e1e] text-slate-300 text-[11px] rounded px-2 py-1 border border-cardborder focus:outline-none cursor-pointer">
+                            <option value="0.5">0.5x</option>
+                            <option value="1" selected>1.0x</option>
+                            <option value="1.25">1.25x</option>
+                            <option value="1.5">1.5x</option>
+                            <option value="2">2.0x</option>
+                        </select>
+                    </div>
+
+                    <!-- Fullscreen -->
+                    <button onclick="toggleFullscreen()" class="px-2.5 py-1 rounded bg-[#1e1e1e] hover:bg-[#2a2a2a] text-slate-200 border border-cardborder cursor-pointer">
+                        <i class="fa-solid fa-expand text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Thread Reply Section -->
+            <div class="mt-4 pt-3 border-t border-cardborder space-y-2 text-xs">
+                <div class="bg-[#121212] p-2.5 rounded border border-cardborder">
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono mb-1">
+                        <span class="font-bold text-changreen">Anonymous</span>
+                        <span>No.94028110</span>
+                    </div>
+                    <p class="greentext">&gt;Attachment successfully decrypted</p>
+                    <p class="text-slate-300 text-[11px]">Stream playing under secure session container.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-cardborder px-4 py-3 text-center text-[10px] text-slate-500 font-mono">
+        <p>Anonymous Board Media Container • Session Active</p>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // DOM Handles
+        const authPortal = document.getElementById('authPortal');
+        const videoContainer = document.getElementById('videoContainer');
+        const passcodeInput = document.getElementById('passcodeInput');
+        const errorMessage = document.getElementById('errorMessage');
+        const mediaPlayer = document.getElementById('mediaPlayer');
+        const blurCurtain = document.getElementById('blurCurtain');
+        const securityAlert = document.getElementById('securityAlert');
+        const securityAlertMsg = document.getElementById('securityAlertMsg');
+        const watermarkStamp = document.getElementById('watermarkStamp');
+        const videoSpinner = document.getElementById('videoSpinner');
+
+        // Player Controls DOM
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const centerPlayBtn = document.getElementById('centerPlayBtn');
+        const muteBtn = document.getElementById('muteBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const progressBar = document.getElementById('progressBar');
+        const progressBarContainer = document.getElementById('progressBarContainer');
+        const currentTimeElem = document.getElementById('currentTime');
+        const durationTimeElem = document.getElementById('durationTime');
+
+        let isUnlocked = false;
+
+        // Session Watermark
+        watermarkStamp.textContent = Math.floor(100000 + Math.random() * 900000);
+
+        // 1. Passcode Check ('vedansh')
+        function handleAuthSubmit(e) {
+            e.preventDefault();
+            const value = passcodeInput.value.trim();
+
+            if (value.toLowerCase() === 'vedansh') {
+                errorMessage.classList.add('hidden');
+                unlockPortal();
+            } else {
+                errorMessage.classList.remove('hidden');
+                passcodeInput.value = '';
+            }
+        }
+
+        function unlockPortal() {
+            isUnlocked = true;
+            authPortal.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                authPortal.classList.add('hidden');
+                videoContainer.classList.remove('hidden');
+                void videoContainer.offsetWidth;
+                videoContainer.classList.remove('scale-95', 'opacity-0');
+                mediaPlayer.load();
+            }, 200);
+        }
+
+        function lockPlayer() {
+            isUnlocked = false;
+            mediaPlayer.pause();
+            videoContainer.classList.add('hidden');
+            authPortal.classList.remove('hidden', 'opacity-0', 'scale-95');
+            passcodeInput.value = '';
+        }
+
+        // 2. Video Control Logic
+        function togglePlay() {
+            if (!isUnlocked) return;
+            if (mediaPlayer.paused || mediaPlayer.ended) {
+                mediaPlayer.play().then(() => updatePlayUI(true)).catch(err => console.error(err));
+            } else {
+                mediaPlayer.pause();
+                updatePlayUI(false);
+            }
+        }
+
+        function updatePlayUI(isPlaying) {
+            if (isPlaying) {
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-pause text-xs"></i>';
+                centerPlayBtn.classList.add('opacity-0', 'pointer-events-none');
+            } else {
+                playPauseBtn.innerHTML = '<i class="fa-solid fa-play text-xs"></i>';
+                centerPlayBtn.classList.remove('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function toggleMute() {
+            mediaPlayer.muted = !mediaPlayer.muted;
+            muteBtn.innerHTML = mediaPlayer.muted 
+                ? '<i class="fa-solid fa-volume-xmark text-xs text-red-400"></i>' 
+                : '<i class="fa-solid fa-volume-high text-xs"></i>';
+        }
+
+        function changeVolume(val) {
+            mediaPlayer.volume = val;
+            mediaPlayer.muted = (val == 0);
+            muteBtn.innerHTML = (val == 0)
+                ? '<i class="fa-solid fa-volume-xmark text-xs text-red-400"></i>'
+                : '<i class="fa-solid fa-volume-high text-xs"></i>';
+        }
+
+        function changeSpeed(val) {
+            mediaPlayer.playbackRate = parseFloat(val);
+        }
+
+        function seekVideo(e) {
+            const rect = progressBarContainer.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            if (mediaPlayer.duration) {
+                mediaPlayer.currentTime = pos * mediaPlayer.duration;
+            }
+        }
+
+        function toggleFullscreen() {
+            const videoStage = document.getElementById('videoStage');
+            if (!document.fullscreenElement) {
+                if (videoStage.requestFullscreen) videoStage.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "00:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        mediaPlayer.addEventListener('loadedmetadata', () => {
+            durationTimeElem.textContent = formatTime(mediaPlayer.duration);
+            videoSpinner.classList.add('hidden');
+        });
+
+        mediaPlayer.addEventListener('timeupdate', () => {
+            currentTimeElem.textContent = formatTime(mediaPlayer.currentTime);
+            if (mediaPlayer.duration) {
+                const pct = (mediaPlayer.currentTime / mediaPlayer.duration) * 100;
+                progressBar.style.width = `${pct}%`;
+            }
+        });
+
+        mediaPlayer.addEventListener('waiting', () => videoSpinner.classList.remove('hidden'));
+        mediaPlayer.addEventListener('canplay', () => videoSpinner.classList.add('hidden'));
+        mediaPlayer.addEventListener('ended', () => updatePlayUI(false));
+
+        // 3. Anti-Capture Security
+        function triggerSecurityAlert(msg) {
+            securityAlertMsg.textContent = msg;
+            securityAlert.classList.remove('translate-x-full');
+            setTimeout(() => securityAlert.classList.add('translate-x-full'), 2500);
+        }
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            triggerSecurityAlert('Context menu disabled.');
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'PrintScreen' || e.code === 'PrintScreen') {
+                e.preventDefault();
+                blurAndPause('Screenshot command detected.');
+                return false;
+            }
+
+            if ((e.ctrlKey || e.metaKey) && ['p', 'P', 's', 'S', 'u', 'U'].includes(e.key)) {
+                e.preventDefault();
+                triggerSecurityAlert('Command blocked.');
+                return false;
+            }
+
+            if (e.key === 'F12' || ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I', 'i', 'J', 'j', 'C', 'c'].includes(e.key))) {
+                e.preventDefault();
+                triggerSecurityAlert('Developer inspect blocked.');
+                return false;
+            }
+        });
+
+        function blurAndPause(reason) {
+            if (isUnlocked && !mediaPlayer.paused) {
+                mediaPlayer.pause();
+                updatePlayUI(false);
+            }
+            blurCurtain.classList.remove('hidden');
+            blurCurtain.classList.add('flex');
+            if (reason) triggerSecurityAlert(reason);
+        }
+
+        function restoreFocus() {
+            blurCurtain.classList.add('hidden');
+            blurCurtain.classList.remove('flex');
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) blurAndPause('Visibility change detected');
+        });
+
+        window.addEventListener('blur', () => blurAndPause('Window focus lost'));
+        window.addEventListener('focus', () => restoreFocus());
+        blurCurtain.addEventListener('click', () => restoreFocus());
+    </script>
+</body>
+</html>
