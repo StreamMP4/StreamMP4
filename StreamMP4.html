@@ -293,12 +293,12 @@
         // Session Watermark
         watermarkStamp.textContent = Math.floor(100000 + Math.random() * 900000);
 
-        // 1. Passcode Check ('vedansh')
+        // 1. Passcode Check ('tejas')
         function handleAuthSubmit(e) {
             e.preventDefault();
             const value = passcodeInput.value.trim();
 
-            if (value.toLowerCase() === 'vedansh') {
+            if (value.toLowerCase() === 'tejas') {
                 errorMessage.classList.add('hidden');
                 unlockPortal();
             } else {
